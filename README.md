@@ -1,5 +1,7 @@
 # Drive a Nikko Vaporizr using the Xbox360 controller!
 
+![](http://d1whee3s2ff61n.cloudfront.net/product/extralarge/116014_D.jpg)
+
 The receiver board died in our Nikko Vaporizr so I swapped it out with the electronics from
 another RC vehicle. Unfortunately the Nikko has separate left/right drive with no steering
 and the replacement transmitter has conventional forward/back/left/right controls, with the
