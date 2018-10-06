@@ -1,5 +1,5 @@
 import xbox
-import vaporizr
+from vaporizr import Stepper, Car
 
 def set_stepper(stepper, x, y):
     "Set the stick X and Y coordinates in the range [-1..+1]"

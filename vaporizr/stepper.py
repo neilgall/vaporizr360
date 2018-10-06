@@ -13,7 +13,7 @@ class Stepper:
     def __init__(self, car):
         self._car = car
         self._queue = queue.Queue()
-        self._step = 0
+        self._tick = 0
         self._left_speed = 0
         self._right_speed = 0
         self._thread = threading.Thread(target=self._bg_main)
@@ -55,6 +55,6 @@ class Stepper:
         self._tick = (self._tick + 1) % TICKS_PER_SECOND
 
     def _direction_for_speed(self, speed):
-        enable = self._step < abs(speed)
+        enable = self._tick < abs(speed)
         return -enable if speed < 0 else enable
 
