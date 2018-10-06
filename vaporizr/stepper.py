@@ -3,18 +3,17 @@ import queue
 import threading
 import time
 
-TICKS_PER_SECOND = 10
-
 class Commands(Enum):
     KILL = 1
     SET_LEFT_SPEED = 2
     SET_RIGHT_SPEED = 3
 
 class Stepper:
-    def __init__(self, car):
+    def __init__(self, car, ticks_per_second = 10):
         self._car = car
         self._queue = queue.Queue()
         self._tick = 0
+        self._ticks_per_second = ticks_per_second
         self._left_speed = 0
         self._right_speed = 0
         self._thread = threading.Thread(target=self._bg_main)
@@ -40,7 +39,7 @@ class Stepper:
                 cmd, arg = self._queue.get()
                 if self._dispatch(cmd, arg):
                     break
-            time.sleep(1.0/TICKS_PER_SECOND)
+            time.sleep(1.0/self._ticks_per_second)
         self._car.stop()
 
     def _dispatch(self, cmd, arg):
@@ -55,7 +54,7 @@ class Stepper:
         left = self._direction_for_speed(self._left_speed)
         right = self._direction_for_speed(self._right_speed) 
         self._car.drive(left, right)
-        self._tick = (self._tick + 1) % TICKS_PER_SECOND
+        self._tick = (self._tick + 1) % self._ticks_per_second
 
     def _direction_for_speed(self, speed):
         enable = 1 if self._tick < abs(speed) else 0
