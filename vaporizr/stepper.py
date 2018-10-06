@@ -1,7 +1,7 @@
 from enum import Enum
 import queue
-import thread
 import threading
+import time
 
 TICKS_PER_SECOND = 10
 
@@ -39,16 +39,17 @@ class Stepper:
             if not self._queue.empty():
                 cmd, arg = self._queue.get()
                 if self._dispatch(cmd, arg):
-                    return
-            thread.sleep(1.0/TICKS_PER_SECOND)
+                    break
+            time.sleep(1.0/TICKS_PER_SECOND)
+        self._car.stop()
 
     def _dispatch(self, cmd, arg):
         if cmd == Commands.KILL:
             return True
         elif cmd == Commands.SET_LEFT_SPEED:
-            self._left_speed = arg * TICKS_PER_SECOND
+            self._left_speed = int(arg * TICKS_PER_SECOND)
         elif cmd == Commands.SET_RIGHT_SPEED:
-            self._right_speed = arg * TICKS_PER_SECOND
+            self._right_speed = int(arg * TICKS_PER_SECOND)
     
     def _step(self):   
         left = self._direction_for_speed(self._left_speed)
@@ -57,6 +58,6 @@ class Stepper:
         self._tick = (self._tick + 1) % TICKS_PER_SECOND
 
     def _direction_for_speed(self, speed):
-        enable = self._tick < abs(speed)
+        enable = 1 if self._tick < abs(speed) else 0
         return -enable if speed < 0 else enable
 

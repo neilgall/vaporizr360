@@ -1,4 +1,5 @@
 import math
+import time
 import xbox
 from vaporizr import Stepper, Car
 
@@ -7,7 +8,6 @@ def set_stepper(stepper, x, y):
     magnitude = math.sqrt(x * x + y * y)
     left_speed = magnitude * y * (1 + x)
     right_speed = magnitude * y * (1 - x)
-    print(left_speed, right_speed)
     stepper.set_left_speed(left_speed)
     stepper.set_right_speed(right_speed)
 
@@ -15,8 +15,10 @@ if __name__ == "__main__":
     joy = xbox.Joystick()
     stepper = Stepper(Car())
 
-    while not joy.Guide():
-        set_stepper(stepper, joy.leftX(), joy.leftY())
-
-    stepper.stop()
-    joy.close()
+    try:
+        while not joy.Start():
+            set_stepper(stepper, joy.leftX(), joy.leftY())
+            time.sleep(0.1)
+    finally:
+        stepper.stop()
+        joy.close()
