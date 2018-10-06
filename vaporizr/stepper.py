@@ -35,7 +35,7 @@ class Stepper:
     def _bg_main(self):
         while True:
             self._step()
-            cmd, arg = self.queue.get(timeout=1.0/TICKS_PER_SECOND)
+            cmd, arg = self._queue.get(timeout=1.0/TICKS_PER_SECOND)
             if cmd is not None:
                 if self._dispatch(cmd, arg):
                     return

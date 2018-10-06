@@ -1,3 +1,4 @@
+import math
 import xbox
 from vaporizr import Stepper, Car
 
@@ -6,6 +7,7 @@ def set_stepper(stepper, x, y):
     magnitude = math.sqrt(x * x + y * y)
     left_speed = magnitude * y * (1 + x)
     right_speed = magnitude * y * (1 - x)
+    print(left_speed, right_speed)
     stepper.set_left_speed(left_speed)
     stepper.set_right_speed(right_speed)
 
