@@ -1,6 +1,4 @@
 from enum import Enum
-import queue
-import threading
 import time
 
 class Commands(Enum):
@@ -9,67 +7,29 @@ class Commands(Enum):
     SET_RIGHT_SPEED = 3
 
 class Stepper:
-    def __init__(self, car, ticks_per_second = 10):
+    def __init__(self, car):
         self._car = car
-        self._queue = queue.Queue()
         self._tick = 0
-        self._ticks_per_second = ticks_per_second
+        self._ticks_per_second = 20
         self._left_speed = 0
         self._right_speed = 0
-        self._thread = threading.Thread(target=self._bg_main)
-        self._thread.start() 
-
-    def stop(self):
-        "Stop the stepper"
-        self._send(Commands.KILL)
-        self._thread.join()
+        self._start_time = time.time()
 
     def set_left_speed(self, speed):
         "Set left wheel speed in range [-1..1]"
-        self._send(Commands.SET_LEFT_SPEED, speed)
+        self._left_speed = speed * self._ticks_per_second
 
     def set_right_speed(self, speed):
         "Set right wheel speed in range [-1..1]"
-        self._send(Commands.SET_RIGHT_SPEED, speed)
+        self._right_speed = speed * self._ticks_per_second
 
-    def _send(self, cmd, arg=None):
-        try:
-            self._queue.put_nowait((cmd, arg))
-        except:
-            pass
-
-    def _recv(self):
-        try:
-            cmd, arg = self._queue.get()
-            self._queue.task_done()
-            return cmd, arg
-        except:
-            return (None,None)
-
-    def _bg_main(self):
-        while True:
-            self._step()
-            cmd, arg = self._recv()
-            if cmd is not None and self._dispatch(cmd, arg):
-                break
-            time.sleep(1.0/self._ticks_per_second)
-        self._car.stop()
-
-    def _dispatch(self, cmd, arg):
-        if cmd == Commands.KILL:
-            return True
-        elif cmd == Commands.SET_LEFT_SPEED:
-            self._left_speed = int(arg * self._ticks_per_second)
-        elif cmd == Commands.SET_RIGHT_SPEED:
-            self._right_speed = int(arg * self._ticks_per_second)
-    
-    def _step(self):   
-        left = self._direction_for_speed(self._left_speed)
-        right = self._direction_for_speed(self._right_speed) 
+    def step(self):   
+        tick = ((time.time() - self._start_time) * self._ticks_per_second) % self._ticks_per_second
+        left = self._direction_for_speed(tick, self._left_speed)
+        right = self._direction_for_speed(tick, self._right_speed) 
         self._car.drive(left, right)
-        self._tick = (self._tick + 1) % self._ticks_per_second
 
-    def _direction_for_speed(self, speed):
-        enable = 1 if self._tick < abs(speed) else 0
+    def _direction_for_speed(self, tick, speed):
+        enable = 1 if tick < abs(speed) else 0
         return -enable if speed < 0 else enable
 

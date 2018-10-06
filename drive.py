@@ -18,7 +18,8 @@ if __name__ == "__main__":
     try:
         while not joy.Start():
             set_stepper(stepper, joy.leftX(), joy.leftY())
-            time.sleep(0.1)
+            stepper.step()
+            time.sleep(0.05)
     finally:
         stepper.stop()
         joy.close()
