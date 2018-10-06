@@ -46,9 +46,9 @@ class Stepper:
         if cmd == Commands.KILL:
             return True
         elif cmd == Commands.SET_LEFT_SPEED:
-            self._left_speed = int(arg * TICKS_PER_SECOND)
+            self._left_speed = int(arg * self._ticks_per_second)
         elif cmd == Commands.SET_RIGHT_SPEED:
-            self._right_speed = int(arg * TICKS_PER_SECOND)
+            self._right_speed = int(arg * self._ticks_per_second)
     
     def _step(self):   
         left = self._direction_for_speed(self._left_speed)
