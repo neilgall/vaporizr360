@@ -5,19 +5,13 @@ from vaporizr import Car
 
 def drive(car, x, y):
     if abs(x) > abs(y):
-        car.drive(0, x)
+        car.drive(1, 0) if x > 0 else car.drive(0, 1)
     elif y > 0:
         car.forward()
     elif y < 0:
         car.backward()
     else:
         car.stop()
-
-    magnitude = math.sqrt(x * x + y * y)
-    left_speed = magnitude * y * (1 + x)
-    right_speed = magnitude * y * (1 - x)
-    stepper.set_left_speed(left_speed)
-    stepper.set_right_speed(right_speed)
 
 if __name__ == "__main__":
     joy = xbox.Joystick()
@@ -28,7 +22,7 @@ if __name__ == "__main__":
             if joy.dpadLeft():
                 car.spinLeft()
             elif joy.dpadRight():
-                car.spinRight():
+                car.spinRight()
             else:
                 drive(car, joy.leftX(), joy.leftY())
     finally:
