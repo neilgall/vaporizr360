@@ -21,24 +21,37 @@ class Stepper:
 
     def stop(self):
         "Stop the stepper"
-        self._queue.put((Commands.KILL, None))
+        self._send(Commands.KILL)
         self._thread.join()
 
     def set_left_speed(self, speed):
         "Set left wheel speed in range [-1..1]"
-        self._queue.put((Commands.SET_LEFT_SPEED, speed))
+        self._send(Commands.SET_LEFT_SPEED, speed)
 
     def set_right_speed(self, speed):
         "Set right wheel speed in range [-1..1]"
-        self._queue.put((Commands.SET_RIGHT_SPEED, speed))
+        self._send(Commands.SET_RIGHT_SPEED, speed)
+
+    def _send(self, cmd, arg=None):
+        try:
+            self._queue.put_nowait((cmd, arg))
+        except:
+            pass
+
+    def _recv(self):
+        try:
+            cmd, arg = self._queue.get()
+            self._queue.task_done()
+            return cmd, arg
+        except:
+            return (None,None)
 
     def _bg_main(self):
         while True:
             self._step()
-            if not self._queue.empty():
-                cmd, arg = self._queue.get()
-                if self._dispatch(cmd, arg):
-                    break
+            cmd, arg = self._recv()
+            if cmd is not None and self._dispatch(cmd, arg):
+                break
             time.sleep(1.0/self._ticks_per_second)
         self._car.stop()
 
