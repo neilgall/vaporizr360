@@ -3,6 +3,14 @@ import time
 import xbox
 from vaporizr import Car
 
+def init_controller():
+    while True:
+        try:
+            return xbox.Joystick()
+        except Exception as e:
+            print(e)
+            time.sleep(5)
+
 def drive(car, x, y):
     if abs(x) > abs(y):
         car.drive(1, 0) if x > 0 else car.drive(0, 1)
@@ -14,7 +22,7 @@ def drive(car, x, y):
         car.stop()
 
 if __name__ == "__main__":
-    joy = xbox.Joystick()
+    joy = init_controller()
     car = Car()
 
     try:
