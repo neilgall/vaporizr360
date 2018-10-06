@@ -1,10 +1,18 @@
 import math
 import time
 import xbox
-from vaporizr import Stepper, Car
+from vaporizr import Car
 
-def set_stepper(stepper, x, y):
-    "Set the stick X and Y coordinates in the range [-1..+1]"
+def drive(car, x, y):
+    if abs(x) > abs(y):
+        car.drive(0, x)
+    elif y > 0:
+        car.forward()
+    elif y < 0:
+        car.backward()
+    else:
+        car.stop()
+
     magnitude = math.sqrt(x * x + y * y)
     left_speed = magnitude * y * (1 + x)
     right_speed = magnitude * y * (1 - x)
@@ -13,13 +21,16 @@ def set_stepper(stepper, x, y):
 
 if __name__ == "__main__":
     joy = xbox.Joystick()
-    stepper = Stepper(Car())
+    car = Car()
 
     try:
         while not joy.Start():
-            set_stepper(stepper, joy.leftX(), joy.leftY())
-            stepper.step()
-            time.sleep(0.05)
+            if joy.dpadLeft():
+                car.spinLeft()
+            elif joy.dpadRight():
+                car.spinRight():
+            else:
+                drive(car, joy.leftX(), joy.leftY())
     finally:
-        stepper.stop()
+        car.stop()
         joy.close()
