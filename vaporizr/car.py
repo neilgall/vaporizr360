@@ -20,40 +20,63 @@ class Car:
         self.stop()
         gpio.cleanup()
 
-    def _output(self, pins, state):
+    def _output(self, pin, state):
         value = gpio.HIGH if state else gpio.LOW
-        for pin in pins:
-            gpio.output(pin, value)
+        gpio.output(pin, value)
 
     def stop(self):
         "Stop the car moving"
-        self._output(Car.PINS, 0)
+        self._output(Car.LEFT_BACKWARD, 0)
+        self._output(Car.RIGHT_BACKWARD, 0)
+        self._output(Car.LEFT_FORWARD, 0)
+        self._output(Car.RIGHT_FORWARD, 0)
 
     def forward(self):
         "Drive the car forwards"
-        self.stop()
-        self._output([Car.LEFT_FORWARD, Car.RIGHT_FORWARD], 1)
+        self._output(Car.LEFT_BACKWARD, 0)
+        self._output(Car.RIGHT_BACKWARD, 0)
+        self._output(Car.LEFT_FORWARD, 1)
+        self._output(Car.RIGHT_FORWARD, 1)
 
     def backward(self):
         "Drive the car backwards"
-        self.stop()
-        self._output([Car.LEFT_BACKWARD, Car.RIGHT_BACKWARD], 1)
+        self._output(Car.LEFT_FORWARD, 0)
+        self._output(Car.RIGHT_FORWARD, 0)
+        self._output(Car.LEFT_BACKWARD, 1)
+        self._output(Car.RIGHT_BACKWARD, 1)
 
     def spinLeft(self):
         "Spin the car on the spot to the left"
-        self.stop()
-        self._output([Car.LEFT_BACKWARD, Car.RIGHT_FORWARD], 1)
+        self._output(Car.LEFT_FORWARD, 0)
+        self._output(Car.RIGHT_BACKWARD, 0)
+        self._output(Car.LEFT_BACKWARD, 1)
+        self._output(Car.RIGHT_FORWARD, 1)
 
     def spinRight(self):
         "Spin the car on the spot to the right"
-        self.stop()
-        self._output([Car.LEFT_FORWARD, Car.RIGHT_BACKWARD], 1)
+        self._output(Car.LEFT_BACKWARD, 0)
+        self._output(Car.RIGHT_FORWARD, 0)
+        self._output(Car.LEFT_FORWARD, 1)
+        self._output(Car.RIGHT_BACKWARD, 1)
 
     def drive(self, left, right):
-        self.stop()
-        pins = []
-        if left > 0: pins.append(Car.LEFT_FORWARD)
-        elif left < 0: pins.append(Car.LEFT_BACKWARD)
-        if right > 0: pins.append(Car.RIGHT_FORWARD)
-        elif right < 0: pins.append(Car.RIGHT_BACKWARD)
-        self._output(pins, 1)
+        if left > 0:
+            self._output(Car.LEFT_BACKWARD, 0)
+            self._output(Car.LEFT_FORWARD, 1)
+        elif left < 0:
+            self._output(Car.LEFT_FORWARD, 0)
+            self._output(Car.LEFT_BACKWARD, 1)
+        else:
+            self._output(Car.LEFT_FORWARD, 0)
+            self._output(Car.LEFT_BACKWARD, 0)
+
+        if right > 0:
+            self._output(Car.RIGHT_BACKWARD, 0)
+            self._output(Car.RIGHT_FORWARD, 1)
+        elif right < 0:
+            self._output(Car.RIGHT_FORWARD, 0)
+            self._output(Car.RIGHT_BACKWARD, 1)
+        else:
+            self._output(Car.RIGHT_BACKWARD, 0)
+            self._output(Car.RIGHT_FORWARD, 0)
+            
