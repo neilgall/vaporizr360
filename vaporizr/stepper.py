@@ -1,5 +1,6 @@
 from enum import Enum
 import queue
+import thread
 import threading
 
 TICKS_PER_SECOND = 10
@@ -35,10 +36,11 @@ class Stepper:
     def _bg_main(self):
         while True:
             self._step()
-            cmd, arg = self._queue.get(timeout=1.0/TICKS_PER_SECOND)
-            if cmd is not None:
+            if not self._queue.empty():
+                cmd, arg = self._queue.get()
                 if self._dispatch(cmd, arg):
                     return
+            thread.sleep(1.0/TICKS_PER_SECOND)
 
     def _dispatch(self, cmd, arg):
         if cmd == Commands.KILL:
