@@ -4,6 +4,7 @@ class Lamp:
     def __init__(self, pin):
         self._pin = pin
         self._state = gpio.LOW
+        gpio.setmode(gpio.BCM)
         gpio.setup(self._pin, gpio.OUT)
 
     def _update(self):

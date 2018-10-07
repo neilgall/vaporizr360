@@ -1,11 +1,11 @@
-import lamp
 import math
 import time
 import xbox
+from lamp import Lamp
 from vaporizr import Car
 
 def init_controller():
-    lamp = lamp.Lamp(pin=25)
+    lamp = Lamp(pin=25)
     while True:
         try:
             joy = xbox.Joystick()
