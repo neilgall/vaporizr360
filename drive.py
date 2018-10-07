@@ -1,15 +1,22 @@
+import lamp
 import math
 import time
 import xbox
 from vaporizr import Car
 
 def init_controller():
+    lamp = lamp.Lamp(pin=25)
     while True:
         try:
-            return xbox.Joystick()
+            joy = xbox.Joystick()
+            lamp.on()
+            return joy
         except Exception as e:
             print(e)
-            time.sleep(5)
+            lamp.on()
+            time.sleep(0.5)
+            lamp.off()
+            time.sleep(0.5)
 
 def drive(car, x, y):
     if abs(x) > abs(y):
